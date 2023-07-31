@@ -71,6 +71,7 @@ function getAudioUrl() {
     // from file in data folder
     // var audioUrl = "data/" + document.getElementById("audio-name").value;
     var audioUrl = document.getElementById("audioUrll").value;
+    clearTranscript();
     document.getElementById("hyperplayer").src = audioUrl;
 }
 
