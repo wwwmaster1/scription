@@ -71,7 +71,6 @@ function getAudioUrl() {
     // from file in data folder
     // var audioUrl = "data/" + document.getElementById("audio-name").value;
     var audioUrl = document.getElementById("audioUrll").value;
-    clearTranscript();
     document.getElementById("hyperplayer").src = audioUrl;
 }
 
@@ -176,7 +175,7 @@ function handleJsonFileSelect(evt) {
         reader.onload = (function (theFile) {
             return function (e) {
                 // Render thumbnail.
-
+                clearTranscript();
                 console.log("loading json: " + theFile.name);
                 document.getElementById("json-name").innerHTML = theFile.name;
                 // console.log(e);
