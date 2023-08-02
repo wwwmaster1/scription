@@ -1,0 +1,8 @@
+.speakers .confirm-button {
+  text-align: center;
+}
+.speakers button {
+  width: 100%;
+  padding: 4px;
+  margin-top: 10px;
+}
