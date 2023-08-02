@@ -51,6 +51,7 @@ function fmtMSS(s) {
 function clearTranscript() {
     $('#content').html('')
     $('.annotation-content').html('');
+    $('#speakers').html('');
 }
 
 // create a new paragraph tag
@@ -63,6 +64,27 @@ function CreateNewPara(timeOfFirstWord, speaker, paraId) {
     var endPara = "</p>"
     var newPara = paraTime + paraSpeaker + paraFormattedTime + endPara;
     return newPara;
+}
+
+function nameChanger(speakersList, speakers) {
+        //find an element with class "message" that contains "word" (from array)
+        for(let i = 0; i < speakersList.length; i++){
+            $('.content>spin:first-child:contains("' + speakersList[i] + '")')
+                 //substitute html with a nice anchor tag
+                 .html(speakers[speakersList[i]]);
+        }
+        console.log(134123412341234);
+}
+
+function createSpeakerChanger(speakerOriginal, speaker, id) {
+    var element = `<div class="form-wrap">
+            <div class="input">
+        <label for="${speaker}">${speakerOriginal}</label>
+        <input type="text" name="${speaker}" value="${speaker}" id="${speaker}" autocomplete="off" disabled>
+        </div>
+        </svg>
+        </div>`
+    return element
 }
 
 // load audio from file or url using the dropdown or text input
@@ -529,6 +551,31 @@ function multiUserProcessor (data, paragraphWordCounter, paragraphCounter) {
 
 }
 
+function findSpeakers (data) {
+    let speakersFlag = {};
+    let speakers = [];
+    for(let i = 0; i < data.length; i++) {
+        let speech = data[i]
+        let speaker = speech.speaker;
+        if(speakersFlag[speaker] !== true && speaker !== undefined) {
+            speakersFlag[speaker] = true;
+            speakers.push(speaker)
+        }
+    }
+    return speakers
+}
+
+function createSpeakers (speakers) {
+    let result = {};
+    for(let i = 0; i < speakers.length; i++) {
+        result[speakers[i]] = speakers[i]
+    }
+    return result
+}
+
+function assignSpeakers () {
+    return true;
+}
 
 // display transcript from json file
 function displayTranscript(userJson) {
@@ -912,7 +959,15 @@ function displayTranscript(userJson) {
         // parse the AWS formatted json
 
         //
-       
+        let speakersList = findSpeakers(data);
+        
+        let speakers = createSpeakers(speakersList);
+
+        for(let i = 0; i < speakersList.length; i++) {
+            let name = prompt(`Please choose prefer instead of ${speakersList[i]}`)
+            speakers[speakersList[i]] = name;
+        }
+
         paragraphWordCounter = 0;
         paragraphCounter = 0;
 
@@ -958,7 +1013,8 @@ function displayTranscript(userJson) {
                 };
             } else {
                 console.log('one speaker');
-                new_speaker = results.speaker;
+                var new_speakerRef = results.speaker;
+                new_speaker = speakers[new_speakerRef];
                 var speaker_times = [[]];
                 var speaker_counter = 0
                 speaker_times[speaker_counter][0] = new_speaker
@@ -1151,6 +1207,12 @@ function displayTranscript(userJson) {
 
             };
         }
+        
+        for(let i = 0; i < speakersList.length; i++) {
+            speakerElement = createSpeakerChanger(speakersList[i], speakers[speakersList[i]], i)
+            $('#speakers').append(speakerElement);
+        }
+        // $('#speakers').append(`<div class="confirm-button"><button id="confirm-button" onclick="nameChanger(${speakersList}, ${speakersList})">Confirm</button>`);
     }
     else if (data.monologues) {
         // rev.ai formatted json
