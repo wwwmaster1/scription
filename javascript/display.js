@@ -59,34 +59,64 @@ function CreateNewPara(timeOfFirstWord, speaker, paraId) {
     var formattedTime = fmtMSS(timeOfFirstWord)
     var paraTime = "<p class='content' id='" + paraId + "' data-time='" + timeOfFirstWord + "' data-tc='" + formattedTime + "'>";
     // only give it span if it's a word?
-    var paraSpeaker = "<span class='unread' data-m='" + timeOfFirstWord + "' data-d='0' class='speaker'>" + speaker + " </span>";
+    var paraSpeaker = "<span class='unread' data-m='" + timeOfFirstWord + "' data-d='0' class='speaker' id="+ speaker +">" + speaker + " </span>";
     var paraFormattedTime = "<span class ='timecode'>[" + formattedTime + "] </span>";
     var endPara = "</p>"
     var newPara = paraTime + paraSpeaker + paraFormattedTime + endPara;
     return newPara;
 }
 
-function nameChanger(speakersList, speakers) {
-        //find an element with class "message" that contains "word" (from array)
-        for(let i = 0; i < speakersList.length; i++){
-            $('.content>spin:first-child:contains("' + speakersList[i] + '")')
-                 //substitute html with a nice anchor tag
-                 .html(speakers[speakersList[i]]);
-        }
-        console.log(134123412341234);
-}
 
 function createSpeakerChanger(speakerOriginal, speaker, id) {
     var element = `<div class="form-wrap">
             <div class="input">
-        <label for="${speaker}">${speakerOriginal}</label>
-        <input type="text" name="${speaker}" value="${speaker}" id="${speaker}" autocomplete="off" disabled>
+        <label for="${speaker}" id="${speaker}">${speaker}</label>
+        <input type="text" name="${speaker}" value="${speaker}" id="${speakerOriginal}" autocomplete="off">
         </div>
         </svg>
         </div>`
     return element
 }
 
+function changeSpeakers(speakers) {
+    var speakerKeys = Object.keys(speakers)
+    var flag = {}
+    $(document).ready(function() {
+        for(let i = 0; i < speakerKeys.length; i++) {
+            inputValue = document.getElementById(speakerKeys[i]).value
+            var elements = document.querySelectorAll(`#${speakers[speakerKeys[i]]}`);
+            
+            if(flag[inputValue] == undefined) {
+                for(let j = 0; j < elements.length; j++) {
+                    elements[j].textContent = inputValue;
+                }
+                flag[inputValue] = 0;
+            }
+            else {
+                flag[inputValue]++
+                for(let j = 0; j < elements.length; j++) {
+                    elements[j].textContent = `${inputValue}_${flag[inputValue]}`;
+                }
+            }
+            $('#'+speakers[speakerKeys[i]]).text(inputValue);
+        }
+        // var firstSpan = $("p.content").find("span:first")
+        // firstSpan.each(function() {
+        //     var firstSpanText = $(this).text();
+        //     for(let i = 0; i < speakerOrigins.length; i++) {
+        //         if(speakers[speakerOrigins[i]] === firstSpanText){
+        //             inputValue = $(document).ready(function() {
+        //                 return $(speakers[i])
+        //             })
+        //             speakers[speakerOrigins[i]] = inputValue
+        //             $(this).text(speakers[speakerOrigins[i]])
+        //         }
+        //     }
+        //     // console.log(speakers);
+        //     // Do something with the firstSpanText
+        //   });
+      });
+}
 // load audio from file or url using the dropdown or text input
 function getAudioUrl() {
 
@@ -291,6 +321,7 @@ var word_start_time;
 
 // load json from url
 function getJSONFromUrl() {
+    clearTranscript();
     var jsonUrl = document.getElementById("jsonUrll").value;
     console.log("loading json: " + jsonUrl);
     document.getElementById("json-name").innerHTML = jsonUrl;
@@ -552,14 +583,14 @@ function multiUserProcessor (data, paragraphWordCounter, paragraphCounter) {
 }
 
 function findSpeakers (data) {
-    let speakersFlag = {};
     let speakers = [];
+    let flag = {};
     for(let i = 0; i < data.length; i++) {
         let speech = data[i]
         let speaker = speech.speaker;
-        if(speakersFlag[speaker] !== true && speaker !== undefined) {
-            speakersFlag[speaker] = true;
+        if(flag[speaker] === undefined && speaker !== undefined) {
             speakers.push(speaker)
+            flag[speaker] = true;
         }
     }
     return speakers
@@ -962,10 +993,18 @@ function displayTranscript(userJson) {
         let speakersList = findSpeakers(data);
         
         let speakers = createSpeakers(speakersList);
-
+        let temp = {}
         for(let i = 0; i < speakersList.length; i++) {
             let name = prompt(`Please choose prefer instead of ${speakersList[i]}`)
-            speakers[speakersList[i]] = name;
+            if(temp[name] == undefined){
+                temp[name] = 0
+                speakers[speakersList[i]] = name;
+            }
+            else {
+                temp[name]++;
+                speakers[speakersList[i]] = `${name}_${temp[name]}`;
+
+            }
         }
 
         paragraphWordCounter = 0;
@@ -1212,7 +1251,9 @@ function displayTranscript(userJson) {
             speakerElement = createSpeakerChanger(speakersList[i], speakers[speakersList[i]], i)
             $('#speakers').append(speakerElement);
         }
-        // $('#speakers').append(`<div class="confirm-button"><button id="confirm-button" onclick="nameChanger(${speakersList}, ${speakersList})">Confirm</button>`);
+        let onClickValue =JSON.stringify(speakers);
+        console.log(onClickValue)
+        $('#speakers').append(`<div class="confirm-button"><button id="confirm-button" onclick='changeSpeakers(${onClickValue})'>Confirm</button>`);
     }
     else if (data.monologues) {
         // rev.ai formatted json
