@@ -347,7 +347,7 @@ function multiUserProcessor (data, paragraphWordCounter, paragraphCounter) {
 
     // set the number of words after which a new sentence is started
     // TODO allow user to set
-    var max_para_length = 100000;
+    var max_para_length = 5;
 
 
      var results = data;
@@ -629,7 +629,7 @@ function displayTranscript(userJson) {
 
     // set the number of words after which a new sentence is started
     // TODO allow user to set
-    var max_para_length = 100000;
+    var max_para_length = 5;
 
     // use the json structure to detect the format being used
     // eg AWS vs DeepSpeech
@@ -710,7 +710,7 @@ function displayTranscript(userJson) {
 
             space = " ";
 
-            text = space + spanStartTime + word + "</span>" + space;
+            text = space + spanStartTime + word + "</span>";
 
             // Uncomment out below to use tooltips
             // spanTooltip = "<span class='tooltiptext'>";
@@ -976,31 +976,10 @@ function displayTranscript(userJson) {
 
     } 
     else if(data.length > 0) {
-        // AWS formatted json
-        console.log('AWS formatted data detected');
+        // WhisperX formatted json
+        console.log('WhisperX formatted data detected');
         // turn on confidence display toggle
         document.getElementById('confidence').removeAttribute('disabled');
-
-
-        // parse the AWS formatted json
-
-        //
-        let speakersList = findSpeakers(data);
-        
-        let speakers = createSpeakers(speakersList);
-        let temp = {}
-        for(let i = 0; i < speakersList.length; i++) {
-            let name = prompt(`Please choose prefer instead of ${speakersList[i]}`)
-            if(temp[name] == undefined){
-                temp[name] = 0
-                speakers[speakersList[i]] = name;
-            }
-            else {
-                temp[name]++;
-                speakers[speakersList[i]] = `${name}_${temp[name]}`;
-
-            }
-        }
 
         paragraphWordCounter = 0;
         paragraphCounter = 0;
@@ -1017,7 +996,7 @@ function displayTranscript(userJson) {
 
             // set the number of words after which a new sentence is started
             // TODO allow user to set
-            var max_para_length = 100000;
+            var max_para_length = 5;
 
             var results = data[j];
             var transcript_raw = JSON.stringify(results.text);
@@ -1240,7 +1219,23 @@ function displayTranscript(userJson) {
                 //}
 
             };
+                    let speakersList = findSpeakers(data);
+                    let speakers = createSpeakers(speakersList);
+                    let temp = {}
+                    for(let i = 0; i < speakersList.length; i++) {
+                        let name = prompt(`Please choose prefer instead of ${speakersList[i]}`)
+                        if(temp[name] == undefined){
+                            temp[name] = 0
+                            speakers[speakersList[i]] = name;
+                        }
+                        else {
+                            temp[name]++;
+                            speakers[speakersList[i]] = `${name}_${temp[name]}`;
+                        }
+                    }
         }
+
+
         
         for(let i = 0; i < speakersList.length; i++) {
             speakerElement = createSpeakerChanger(speakersList[i], speakers[speakersList[i]], i)
