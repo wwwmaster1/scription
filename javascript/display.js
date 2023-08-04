@@ -1007,6 +1007,8 @@ function displayTranscript(userJson) {
             // Note: in the json a speaker can speak multiple times in a row
             // we simplify this
 
+console.log(results);
+            
             if (results.speaker_labels) {
                 console.log('multiple speakers');
                 var whoIsSpeaker
