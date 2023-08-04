@@ -119,7 +119,6 @@ function changeSpeakers(speakers) {
 }
 // load audio from file or url using the dropdown or text input
 function getAudioUrl() {
-
     // from file in data folder
     // var audioUrl = "data/" + document.getElementById("audio-name").value;
     var audioUrl = document.getElementById("audioUrll").value;
@@ -196,14 +195,10 @@ document.getElementById('user-audio-file').addEventListener('change', handleFile
 // });
 
 
-
-
 // load json from user selected file
 function handleJsonFileSelect(evt) {
     var files = evt.target.files; // FileList object
-
     // console.log(files);
-
     // Loop through the FileList and render image files as thumbnails.
     for (var i = 0, f; f = files[i]; i++) {
 
@@ -352,7 +347,7 @@ function multiUserProcessor (data, paragraphWordCounter, paragraphCounter) {
 
     // set the number of words after which a new sentence is started
     // TODO allow user to set
-    var max_para_length = 10;
+    var max_para_length = 100000;
 
 
      var results = data;
@@ -634,7 +629,7 @@ function displayTranscript(userJson) {
 
     // set the number of words after which a new sentence is started
     // TODO allow user to set
-    var max_para_length = 10;
+    var max_para_length = 100000;
 
     // use the json structure to detect the format being used
     // eg AWS vs DeepSpeech
@@ -1022,7 +1017,7 @@ function displayTranscript(userJson) {
 
             // set the number of words after which a new sentence is started
             // TODO allow user to set
-            var max_para_length = 20;
+            var max_para_length = 100000;
 
             var results = data[j];
             var transcript_raw = JSON.stringify(results.text);
