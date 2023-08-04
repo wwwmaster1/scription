@@ -1006,10 +1006,8 @@ function displayTranscript(userJson) {
             // REPLY: yes, it is used to look up who the speaker is depending on the time
             // Note: in the json a speaker can speak multiple times in a row
             // we simplify this
-
-console.log(results);
             
-            if (results.speaker_labels) {
+            if (results.speaker_labels || 1==1) {
                 console.log('multiple speakers');
                 var whoIsSpeaker
                 var speaker_times = [];
