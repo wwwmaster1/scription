@@ -61,7 +61,7 @@ function CreateNewPara(timeOfFirstWord, speaker, paraId) {
     // only give it span if it's a word?
     var paraSpeaker = "<span class='unread' data-m='" + timeOfFirstWord + "' data-d='0' class='speaker' id="+ speaker +">" + speaker + " </span>";
     var paraFormattedTime = "<span class ='timecode'>[" + formattedTime + "] </span>";
-    var endPara = "</p>"
+    var endPara = "</p>";
     var newPara = paraTime + paraSpeaker + paraFormattedTime + endPara;
     return newPara;
 }
@@ -710,7 +710,7 @@ function displayTranscript(userJson) {
 
             space = " ";
 
-            text = space + spanStartTime + word + "</span>";
+            text = space + spanStartTime + word + "</span>" + space;
 
             // Uncomment out below to use tooltips
             // spanTooltip = "<span class='tooltiptext'>";
