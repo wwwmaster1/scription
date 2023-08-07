@@ -9,3 +9,10 @@
 .speakers label {
   width: 100px;
 }
+.label {
+  padding: 19px;
+  margin-left: -16px;
+}
+.input-element {
+  margin-bottom: 4px;
+}
