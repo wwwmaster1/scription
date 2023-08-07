@@ -61,7 +61,7 @@ function CreateNewPara(timeOfFirstWord, speaker, paraId) {
     // only give it span if it's a word?
     var paraSpeaker = "<span class='unread' data-m='" + timeOfFirstWord + "' data-d='0' class='speaker' id="+ speaker +">" + speaker + " </span>";
     var paraFormattedTime = "<span class ='timecode'>[" + formattedTime + "] </span>";
-    var endPara = "</p>";
+    var endPara = "</p>"
     var newPara = paraTime + paraSpeaker + paraFormattedTime + endPara;
     return newPara;
 }
@@ -70,8 +70,8 @@ function CreateNewPara(timeOfFirstWord, speaker, paraId) {
 function createSpeakerChanger(speakerOriginal, speaker, id) {
     var element = `<div class="form-wrap">
             <div class="input">
-        <label for="${speaker}" id="${speaker}">${speaker}</label>
-        <input type="text" name="${speaker}" value="${speaker}" id="${speakerOriginal}" autocomplete="off">
+        <label for="${speaker}" id="${speaker}" class='label tag is-medium single-line accordion-category category-${id}'>${speaker}</label>
+        <input type="text" class="input-element" name="${speaker}" value="${speaker}" id="${speakerOriginal}" autocomplete="off">
         </div>
         </svg>
         </div>`
@@ -119,6 +119,7 @@ function changeSpeakers(speakers) {
 }
 // load audio from file or url using the dropdown or text input
 function getAudioUrl() {
+
     // from file in data folder
     // var audioUrl = "data/" + document.getElementById("audio-name").value;
     var audioUrl = document.getElementById("audioUrll").value;
@@ -195,10 +196,14 @@ document.getElementById('user-audio-file').addEventListener('change', handleFile
 // });
 
 
+
+
 // load json from user selected file
 function handleJsonFileSelect(evt) {
     var files = evt.target.files; // FileList object
+
     // console.log(files);
+
     // Loop through the FileList and render image files as thumbnails.
     for (var i = 0, f; f = files[i]; i++) {
 
@@ -347,7 +352,7 @@ function multiUserProcessor (data, paragraphWordCounter, paragraphCounter) {
 
     // set the number of words after which a new sentence is started
     // TODO allow user to set
-    var max_para_length = 5;
+    var max_para_length = 10;
 
 
      var results = data;
@@ -629,7 +634,7 @@ function displayTranscript(userJson) {
 
     // set the number of words after which a new sentence is started
     // TODO allow user to set
-    var max_para_length = 5;
+    var max_para_length = 10;
 
     // use the json structure to detect the format being used
     // eg AWS vs DeepSpeech
@@ -931,7 +936,7 @@ function displayTranscript(userJson) {
             } else if (type == "punctuation") {
                 // check if the previous word was also punctuation cause by removing an utterence
 
-                text = space + word
+                text = space + word + space
 
 
             };
@@ -976,10 +981,31 @@ function displayTranscript(userJson) {
 
     } 
     else if(data.length > 0) {
-        // WhisperX formatted json
-        console.log('WhisperX formatted data detected');
+        // AWS formatted json
+        console.log('GoogleSpeechKit formatted data detected');
         // turn on confidence display toggle
         document.getElementById('confidence').removeAttribute('disabled');
+
+
+        // parse the AWS formatted json
+
+        //
+        let speakersList = findSpeakers(data);
+        
+        let speakers = createSpeakers(speakersList);
+        // let temp = {}
+        // for(let i = 0; i < speakersList.length; i++) {
+        //     let name = prompt(`Please choose prefer instead of ${speakersList[i]}`)
+        //     if(temp[name] == undefined){
+        //         temp[name] = 0
+        //         speakers[speakersList[i]] = name;
+        //     }
+        //     else {
+        //         temp[name]++;
+        //         speakers[speakersList[i]] = `${name}_${temp[name]}`;
+
+        //     }
+        // }
 
         paragraphWordCounter = 0;
         paragraphCounter = 0;
@@ -996,7 +1022,7 @@ function displayTranscript(userJson) {
 
             // set the number of words after which a new sentence is started
             // TODO allow user to set
-            var max_para_length = 5;
+            var max_para_length = 20;
 
             var results = data[j];
             var transcript_raw = JSON.stringify(results.text);
@@ -1006,8 +1032,8 @@ function displayTranscript(userJson) {
             // REPLY: yes, it is used to look up who the speaker is depending on the time
             // Note: in the json a speaker can speak multiple times in a row
             // we simplify this
-            
-            if (results.speaker_labels || 1==1) {
+
+            if (results.speaker_labels) {
                 console.log('multiple speakers');
                 var whoIsSpeaker
                 var speaker_times = [];
@@ -1068,6 +1094,9 @@ function displayTranscript(userJson) {
                     ``
                     // TODO truncaste this as it can go to lots of decimal places
                     duration_ms = Math.round(1000 * (next_word_start_time - word_start_time))
+                }
+                else {
+                    duration_ms = 0;
                 }
 
                 if(Object.keys(results.words[i]).length == 1 && results.words[i].word.includes('.')){
@@ -1181,7 +1210,7 @@ function displayTranscript(userJson) {
                 } else if (type == "punctuation") {
                     // check if the previous word was also punctuation cause by removing an utterence
 
-                    text = space + word
+                    text = ' ' + word;
 
 
                 };
@@ -1219,23 +1248,7 @@ function displayTranscript(userJson) {
                 //}
 
             };
-                    let speakersList = findSpeakers(data);
-                    let speakers = createSpeakers(speakersList);
-                    let temp = {}
-                    for(let i = 0; i < speakersList.length; i++) {
-                        let name = prompt(`Please choose prefer instead of ${speakersList[i]}`)
-                        if(temp[name] == undefined){
-                            temp[name] = 0
-                            speakers[speakersList[i]] = name;
-                        }
-                        else {
-                            temp[name]++;
-                            speakers[speakersList[i]] = `${name}_${temp[name]}`;
-                        }
-                    }
         }
-
-
         
         for(let i = 0; i < speakersList.length; i++) {
             speakerElement = createSpeakerChanger(speakersList[i], speakers[speakersList[i]], i)
@@ -1335,7 +1348,7 @@ function displayTranscript(userJson) {
 
             // work out next word start time and duration (for new paragraph tag)
             if (results.elements[i + 1] && results.elements[i + 1].ts) {
-                next_word_start_time = results.elements[i + 1].ts;
+                let next_word_start_time = results.elements[i + 1].ts;
                 // TODO truncaste this as it can go to lots of decimal places
                 duration_ms = Math.round(1000 * (next_word_start_time - word_start_time))
 
@@ -1428,9 +1441,9 @@ function displayTranscript(userJson) {
             if (type == "text") {
                 text = spanStartTime + word + "</span>";
                 paragraphWordCounter++;
-            } else if (type == "punct") {
+            } else   {
                 // check if the previous word was also punctuation cause by removing an utterence
-                text = word
+                text =' ' + word + ' ';
             };
 
             // Uncomment out below to use tooltips
@@ -1549,7 +1562,7 @@ function displayTranscript(userJson) {
 
                 space = " ";
 
-                text = space + spanStartTime + word + "</span>";
+                text = space + spanStartTime + word + ' ' + "</span>";
 
                 // append text to paragraph
                 para = "#para-" + paragraphCounter;
